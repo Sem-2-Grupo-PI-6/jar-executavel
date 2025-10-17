@@ -46,7 +46,6 @@
 
     <build>
         <plugins>
-            <!-- 🔧 Plugin para compilar com a versão correta do Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -57,7 +56,6 @@
                 </configuration>
             </plugin>
 
-            <!-- 🚀 Plugin para gerar um .jar executável -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
