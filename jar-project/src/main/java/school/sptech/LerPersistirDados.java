@@ -4,25 +4,72 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 public class LerPersistirDados {
     Conexao conexao = new Conexao();
     JdbcTemplate jdbcTemplate = new JdbcTemplate(conexao.getConexao());
 
-
-    public void gravarDados(String caminho) {
-        try (FileInputStream fis = new FileInputStream(caminho);
-             Workbook workbook = WorkbookFactory.create(fis)) {
-            System.out.println(fis);
+    public void inserirDadosInflacao(InputStream arquivo) {
+        try (Workbook workbook = WorkbookFactory.create(arquivo)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++){
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+
+                Date dataApuracao = row.getCell(0).getDateCellValue();
+                Double taxaApuracao = row.getCell(1).getNumericCellValue();
+
+                Inflacao inflacao = new Inflacao(dataApuracao, taxaApuracao);
+                inflacao.setTaxaInflacao(taxaApuracao);
+                inflacao.setDataApuracao(dataApuracao);
+
+                jdbcTemplate.update(
+                        "INSERT INTO inflacao (, inflacao) VALUES (?, ?)",
+                        inflacao.getTaxaInflacao(),
+                        inflacao.getDataApuracao()
+                );
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo Excel", e);
+        }
+    }
+
+    /*public void inserirDadosSelic(InputStream inputStream) {
+        try (Workbook workbook = WorkbookFactory.create(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+
+                Date dataApuracao = row.getCell(0).getDateCellValue();
+                Double taxaApurcao = row.getCell(1).getNumericCellValue();
+
+                Inflacao inflacao = new Inflacao(dataApuracao, taxaApurcao);
+                inflacao.setDataApuracao(String.valueOf(dataApuracao));
+                inflacao.setTaxaInflacao(taxaApurcao);
+
+                jdbcTemplate.update(
+                        "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
+                        inflacao.getMunicipio(),
+                        inflacao.getInflacao()
+                );
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo Excel", e);
+        }
+    }
+
+    public void inserirDadosPopulacao(InputStream inputStream) {
+        try (Workbook workbook = WorkbookFactory.create(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
 
                 String mun = row.getCell(0).getStringCellValue();
@@ -39,10 +86,34 @@ public class LerPersistirDados {
                 );
             }
 
-
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao processar arquivo Excel", e);
         }
     }
+
+    public void inserirDadosipeaData_PIB_ConstrucaoCivil(InputStream inputStream) {
+        try (Workbook workbook = WorkbookFactory.create(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+
+                String mun = row.getCell(0).getStringCellValue();
+                Double num = row.getCell(1).getNumericCellValue();
+
+                Inflacao inflacao = new Inflacao();
+                inflacao.setMunicipio(mun);
+                inflacao.setInflacao(num);
+
+                jdbcTemplate.update(
+                        "INSERT INTO inflacao (municipio, inflacao) VALUES (?, ?)",
+                        inflacao.getMunicipio(),
+                        inflacao.getInflacao()
+                );
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo Excel", e);
+        }
+    }*/
 }

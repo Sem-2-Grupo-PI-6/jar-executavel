@@ -3,24 +3,24 @@ package school.sptech;
 import java.util.Date;
 
 public class LogSelic {
-    private Integter id;
-    private Integter idSelic;
+    private Integer id;
+    private Integer idSelic;
     private String descricao;
     private Date dataHora;
 
-    public Integter getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Integter id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Integter getIdSelic() {
+    public Integer getIdSelic() {
         return idSelic;
     }
 
-    public void setIdSelic(Integter idSelic) {
+    public void setIdSelic(Integer idSelic) {
         this.idSelic = idSelic;
     }
 

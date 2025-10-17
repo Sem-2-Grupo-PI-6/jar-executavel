@@ -1,20 +1,30 @@
 package school.sptech;
 
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import software.amazon.awssdk.regions.Region;
 
-import java.sql.JDBCType;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Conexao conexao = new Conexao();
+            LerPersistirDados lerPersistirDados = new LerPersistirDados();
+            String bucket = "s3-sixtech";
+            Region region = Region.US_EAST_1;
+            S3Download s3Downloader = new S3Download(bucket, region);
+            
+            List<String> arquivosXlsx = new ArrayList<>();
+            arquivosXlsx.add("inflacao.xlsx");
+            arquivosXlsx.add("populacao.xlsx");
+            arquivosXlsx.add("ipeaData_PIB_ConstrucaoCivil.xlsx.xlsx");
+            arquivosXlsx.add("selic.xlsx");
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(conexao.getConexao());
-
-        LerPersistirDados lerPersistirDados = new LerPersistirDados();
-
-        lerPersistirDados.gravarDados("src/main/java/school/sptech/inflacao.xlsx");
+        for (String xlsx : arquivosXlsx) {
+            if(xlsx.equals("inflacao.xlsx")){
+                InputStream inputStream = s3Downloader.baixarArquivo(xlsx);
+                lerPersistirDados.inserirDadosInflacao(inputStream);
+            }
+        }
 
     }
 }

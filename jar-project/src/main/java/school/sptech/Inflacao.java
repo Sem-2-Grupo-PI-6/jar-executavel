@@ -1,32 +1,37 @@
 package school.sptech;
 
-import javax.xml.crypto.Data;
+import java.util.Date;
 
 public class Inflacao {
-    private String municipio;
-    private Double inflacao;
+    private Date dataApuracao;
+    private Double taxaInflacao;
 
-    public String getMunicipio() {
-        return municipio;
+    public Inflacao(Date dataApuracao, Double taxaInflacao) {
+        this.dataApuracao = dataApuracao;
+        this.taxaInflacao = taxaInflacao;
     }
 
-    public void setMunicipio(String municipio) {
-        this.municipio = municipio;
+    public Date getDataApuracao() {
+        return dataApuracao;
     }
 
-    public Double getInflacao() {
-        return inflacao;
+    public void setDataApuracao(Date dataApuracao) {
+        this.dataApuracao = dataApuracao;
     }
 
-    public void setInflacao(Double inflcao) {
-        this.inflacao = inflcao;
+    public Double getTaxaInflacao() {
+        return taxaInflacao;
+    }
+
+    public void setTaxaInflacao(Double taxaInflacao) {
+        this.taxaInflacao = taxaInflacao;
     }
 
     @Override
     public String toString() {
         return "Inflacao{" +
-                "municipio='" + municipio + '\'' +
-                ", inflcao=" + inflacao +
+                "dataApuracao=" + dataApuracao +
+                ", taxaInflacao=" + taxaInflacao +
                 '}';
     }
 }
