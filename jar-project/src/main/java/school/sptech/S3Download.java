@@ -15,7 +15,7 @@ public class S3Download {
 
     private final S3Client s3Client;
     private final String bucketName;
-    
+
     public S3Download(String bucketName, Region region) {
         this.bucketName = bucketName;
         this.s3Client = S3Client.builder()
@@ -32,7 +32,6 @@ public class S3Download {
                 .bucket(bucketName)
                 .key(key)
                 .build();
-
         try {
             ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
             System.out.println("Download do arquivo '" + key + "' iniciado com sucesso.");
@@ -48,10 +47,6 @@ public class S3Download {
             throw new IOException("Falha no S3 ao baixar: " + e.awsErrorDetails().errorMessage(), e);
         }
     }
-
-    /**
-     * Fecha o cliente S3 quando terminar.
-     */
     public void fechar() {
         if (s3Client != null) {
             s3Client.close();
