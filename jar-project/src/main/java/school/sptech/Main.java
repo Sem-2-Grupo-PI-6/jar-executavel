@@ -22,7 +22,7 @@ public class Main {
 
         for (String xlsx : arquivosXlsx) {
             if(xlsx.equals("inflacao.xlsx")){
-                InputStream inputStream = s3Downloader.baixarArquivo(   xlsx);
+                InputStream inputStream = s3Downloader.baixarArquivo(xlsx);
                 System.out.println(inputStream);
                 lerPersistirDados.inserirDadosInflacao(inputStream);
             }

@@ -1,52 +1,52 @@
-package school.sptech;
+    package school.sptech;
 
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+    import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+    import software.amazon.awssdk.core.ResponseInputStream;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.s3.S3Client;
+    import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+    import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+    import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import java.io.IOException;
-import java.io.InputStream;
+    import java.io.IOException;
+    import java.io.InputStream;
 
-public class S3Download {
+    public class S3Download {
 
-    private final S3Client s3Client;
-    private final String bucketName;
+        private final S3Client s3Client;
+        private final String bucketName;
 
-    public S3Download(String bucketName, Region region) {
-        this.bucketName = bucketName;
-        this.s3Client = S3Client.builder()
-                .region(region)
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
-    }
+        public S3Download(String bucketName, Region region) {
+            this.bucketName = bucketName;
+            this.s3Client = S3Client.builder()
+                    .region(region)
+                    .credentialsProvider(DefaultCredentialsProvider.create())
+                    .build();
+        }
 
-    public InputStream baixarArquivo(String key) throws IOException {
-        System.out.println("Tentando baixar o arquivo do S3: " + bucketName + "/" + key);
+        public InputStream baixarArquivo(String key) throws IOException {
+            System.out.println("Tentando baixar o arquivo do S3: " + bucketName + "/" + key);
 
-        GetObjectRequest request = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-        try {
-            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
-            System.out.println("Download do arquivo '" + key + "' iniciado com sucesso.");
-            return response;
+            GetObjectRequest request = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+            try {
+                ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
+                System.out.println("Download do arquivo '" + key + "' iniciado com sucesso.");
+                return response;
 
-        } catch (S3Exception e) {
-            System.err.println("Status: " + e.statusCode());
-            System.err.println("Motivo: " + e.awsErrorDetails().errorMessage());
-            System.err.println("Verifique se a IAM Role da sua EC2 possui 's3:GetObject' no bucket.");
-            throw new IOException("Falha no S3 ao baixar: " + e.awsErrorDetails().errorMessage(), e);
+            } catch (S3Exception e) {
+                System.err.println("Status: " + e.statusCode());
+                System.err.println("Motivo: " + e.awsErrorDetails().errorMessage());
+                System.err.println("Verifique se a IAM Role da sua EC2 possui 's3:GetObject' no bucket.");
+                throw new IOException("Falha no S3 ao baixar: " + e.awsErrorDetails().errorMessage(), e);
+            }
+        }
+        public void fechar() {
+            if (s3Client != null) {
+                s3Client.close();
+                System.out.println("Cliente S3 fechado.");
+            }
         }
     }
-    public void fechar() {
-        if (s3Client != null) {
-            s3Client.close();
-            System.out.println("Cliente S3 fechado.");
-        }
-    }
-}
