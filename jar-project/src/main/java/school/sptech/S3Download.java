@@ -23,7 +23,7 @@ public class S3Download {
                 .build();
     }
 
-    public InputStream baixarArquivo(String key) {
+    public InputStream baixarArquivo(String key) throws IOException {
         System.out.println("Baixando arquivo do S3: " + key);
 
         GetObjectRequest request = GetObjectRequest.builder()
@@ -32,7 +32,8 @@ public class S3Download {
                 .build();
 
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
-        System.out.println("Download concluído.");
+        System.out.println("Download concluído." + response);
+        System.out.println("Tamanho do arquivo: " + response.available() + " bytes");
         return response;
     }
 
