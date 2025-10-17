@@ -34,12 +34,9 @@ public class S3Download {
         try {
             ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
             System.out.println("Download do arquivo '" + key + "' iniciado com sucesso.");
-            // O getObject() retorna um ResponseInputStream, que é o objeto com o stream de dados.
             return response;
 
         } catch (S3Exception e) {
-            // Captura erros de permissão (Access Denied) ou arquivo não encontrado (NoSuchKey)
-            System.err.println("--- ERRO DE ACESSO AO S3 ---");
             System.err.println("Status: " + e.statusCode());
             System.err.println("Motivo: " + e.awsErrorDetails().errorMessage());
             System.err.println("Verifique se a IAM Role da sua EC2 possui 's3:GetObject' no bucket.");
