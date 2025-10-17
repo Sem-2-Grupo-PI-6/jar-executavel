@@ -1,9 +1,11 @@
 package school.sptech;
 
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
@@ -35,7 +37,15 @@ public class LerPersistirDados {
                 );
             }
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao processar arquivo Excel", e);
+            throw new RuntimeException("Erro de I/O ao processar o arquivo (Verifique POI e formato): " + e.getMessage(), e);
+        } catch (EncryptedDocumentException e) {
+            throw new RuntimeException("O arquivo Excel está criptografado e não pode ser lido.", e);
+        } catch (IllegalStateException e) {
+            throw new RuntimeException("Erro de estado na célula (Tipo de dado incorreto na coluna): " + e.getMessage(), e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Erro de acesso ao banco de dados durante a inserção: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro inesperado durante o processamento do Excel ou DB: " + e.getMessage(), e);
         }
     }
 

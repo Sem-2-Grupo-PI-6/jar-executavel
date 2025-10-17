@@ -20,7 +20,6 @@ public class S3Download {
         this.bucketName = bucketName;
         this.s3Client = S3Client.builder()
                 .region(region)
-                // O provedor de credenciais padrão buscará automaticamente o IAM Role
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
