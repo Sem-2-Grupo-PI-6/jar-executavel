@@ -43,13 +43,11 @@
             <version>5.3.0</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-full</artifactId>
             <version>5.3.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
@@ -57,13 +55,11 @@
             <version>5.1.1</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.23.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -75,12 +71,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.23.1</version>
         </dependency>
     </dependencies>
 
@@ -95,7 +85,6 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -118,5 +107,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
