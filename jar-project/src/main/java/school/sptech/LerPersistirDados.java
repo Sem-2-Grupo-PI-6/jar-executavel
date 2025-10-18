@@ -7,8 +7,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -32,7 +30,7 @@ public class LerPersistirDados {
                 inflacao.setDataApuracao(dataApuracao);
 
                 jdbcTemplate.update(
-                        "INSERT INTO inflacao (, inflacao) VALUES (?, ?)",
+                        "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
                         inflacao.getTaxaInflacao(),
                         inflacao.getDataApuracao()
                 );
