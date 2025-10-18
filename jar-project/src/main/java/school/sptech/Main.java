@@ -24,13 +24,16 @@ public class Main {
         for (String xlsx : arquivosXlsx) {
             System.out.println("Processando arquivo: " + xlsx);
 
-            InputStream s3InputStream = s3Downloader.baixarArquivo(xlsx);
+            try (InputStream s3InputStream = s3Downloader.baixarArquivo(xlsx)) {
 
-            byte[] bytes = s3InputStream.readAllBytes();
-            try (InputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
-                if (xlsx.equals("inflacao.xlsx")) {
-                    lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);
+                byte[] bytes = s3InputStream.readAllBytes();
+                try (InputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+                    switch (xlsx) {
+                        case "inflacao.xlsx" -> lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);;
+                    }
                 }
+            } catch (IOException e) {
+                System.err.println("Erro ao processar arquivo " + xlsx + ": " + e.getMessage());
             }
         }
 
