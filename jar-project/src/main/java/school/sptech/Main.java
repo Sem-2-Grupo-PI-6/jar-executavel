@@ -2,57 +2,39 @@ package school.sptech;
 
 import software.amazon.awssdk.regions.Region;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        LerPersistirDados lerPersistirDados = new LerPersistirDados();
         String bucket = "s3-sixtech";
         Region region = Region.US_EAST_1;
-
         S3Download s3Downloader = new S3Download(bucket, region);
-        LerPersistirDados lerPersistirDados = new LerPersistirDados();
 
-        // Lista de arquivos que você quer processar
-        List<String> arquivosXlsx = Arrays.asList(
+        List<String> arquivosXlsx = List.of(
                 "inflacao.xlsx",
                 "populacao.xlsx",
                 "ipeaData_PIB_ConstrucaoCivil.xlsx",
                 "selic.xlsx"
         );
 
-        try {
-            for (String arquivo : arquivosXlsx) {
-                System.out.println("Processando arquivo: " + arquivo);
+        for (String xlsx : arquivosXlsx) {
+            System.out.println("Processando arquivo: " + xlsx);
 
-                try (InputStream inputStream = s3Downloader.baixarArquivo(arquivo)) {
-                    switch (arquivo) {
-                        case "inflacao.xlsx":
-                            lerPersistirDados.inserirDadosInflacao(inputStream);
-                            break;
-                        /*
-                        case "populacao.xlsx":
-                            lerPersistirDados.inserirDadosPopulacao(inputStream);
-                            break;
-                        case "ipeaData_PIB_ConstrucaoCivil.xlsx":
-                            lerPersistirDados.inserirDadosipeaData_PIB_ConstrucaoCivil(inputStream);
-                            break;
-                        case "selic.xlsx":
-                            lerPersistirDados.inserirDadosSelic(inputStream);
-                            break;
-                        */
-                        default:
-                            System.out.println("Arquivo não mapeado para inserção: " + arquivo);
-                    }
+            InputStream s3InputStream = s3Downloader.baixarArquivo(xlsx);
+
+            byte[] bytes = s3InputStream.readAllBytes();
+            try (InputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+                if (xlsx.equals("inflacao.xlsx")) {
+                    lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Erro ao baixar/processar arquivos do S3: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            s3Downloader.fechar();
         }
+
+        s3Downloader.fechar();
+        System.out.println("Todos os arquivos processados com sucesso.");
     }
 }
