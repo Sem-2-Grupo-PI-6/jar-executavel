@@ -29,7 +29,7 @@ public class Main {
                 byte[] bytes = s3InputStream.readAllBytes();
                 try (InputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
                     switch (xlsx) {
-                        case "inflacao.xlsx" -> lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);;
+                        case "inflacao.xlsx" -> lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);
                     }
                 }
             } catch (IOException e) {
