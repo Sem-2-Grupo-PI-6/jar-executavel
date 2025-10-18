@@ -9,15 +9,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 
 public class LerPersistirDados {
     Conexao conexao = new Conexao();
     JdbcTemplate jdbcTemplate = new JdbcTemplate(conexao.getConexao());
 
-    public void inserirDadosInflacao(InputStream arquivo) {
+    public void inserirDadosInflacao(FileInputStream arquivo) {
         try (Workbook workbook = WorkbookFactory.create(arquivo)) {
             Sheet sheet = workbook.getSheetAt(0);
 

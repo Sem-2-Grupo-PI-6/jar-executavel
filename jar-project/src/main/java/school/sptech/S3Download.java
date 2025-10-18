@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,10 +34,10 @@ public class S3Download {
                 .key(key)
                 .build();
         try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request)) {
-            byte[] bytes = response.readAllBytes();
-            System.out.println("Download do arquivo '" + key + "' concluído com sucesso. Tamanho: " + bytes.length + " bytes");
 
-            return new ByteArrayInputStream(bytes);
+            System.out.println("Download do arquivo '" + key + "' concluído com sucesso.");
+
+            return response;
         } catch (S3Exception e) {
             System.err.println("Status: " + e.statusCode());
             System.err.println("Motivo: " + e.awsErrorDetails().errorMessage());

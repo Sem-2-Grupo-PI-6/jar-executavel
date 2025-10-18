@@ -3,6 +3,7 @@ package school.sptech;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -24,13 +25,9 @@ public class Main {
         for (String xlsx : arquivosXlsx) {
             System.out.println("Processando arquivo: " + xlsx);
 
-            try (InputStream s3InputStream = s3Downloader.baixarArquivo(xlsx)) {
-
-                byte[] bytes = s3InputStream.readAllBytes();
-                try (InputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+            try (FileInputStream s3InputStream = (FileInputStream) s3Downloader.baixarArquivo(xlsx)) {
                     switch (xlsx) {
-                        case "inflacao.xlsx" -> lerPersistirDados.inserirDadosInflacao(byteArrayInputStream);
-                    }
+                        case "inflacao.xlsx" -> lerPersistirDados.inserirDadosInflacao(s3InputStream);
                 }
             } catch (IOException e) {
                 System.err.println("Erro ao processar arquivo " + xlsx + ": " + e.getMessage());
