@@ -8,6 +8,7 @@
     import software.amazon.awssdk.services.s3.model.GetObjectResponse;
     import software.amazon.awssdk.services.s3.model.S3Exception;
 
+    import java.io.ByteArrayInputStream;
     import java.io.IOException;
     import java.io.InputStream;
 
@@ -31,11 +32,10 @@
                     .bucket(bucketName)
                     .key(key)
                     .build();
-            try {
-                ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
-                System.out.println("Download do arquivo '" + key + "' iniciado com sucesso.");
-                return response;
-
+            try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request)) {
+                byte[] bytes = response.readAllBytes();
+                System.out.println("Download do arquivo '" + key + "' concluído com sucesso. Tamanho: " + bytes.length + " bytes");
+                return new ByteArrayInputStream(bytes);
             } catch (S3Exception e) {
                 System.err.println("Status: " + e.statusCode());
                 System.err.println("Motivo: " + e.awsErrorDetails().errorMessage());
@@ -43,6 +43,7 @@
                 throw new IOException("Falha no S3 ao baixar: " + e.awsErrorDetails().errorMessage(), e);
             }
         }
+
         public void fechar() {
             if (s3Client != null) {
                 s3Client.close();
