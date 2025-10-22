@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -37,7 +38,7 @@ public class LerPersistirDados {
 
     public void inserirDadosInflacao(String key) {
         try (InputStream inputStream = baixarArquivo(key);
-             Workbook workbook = WorkbookFactory.create(inputStream)) {
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
 
             Sheet sheet = workbook.getSheetAt(0);
 
@@ -81,10 +82,10 @@ public class LerPersistirDados {
 
         try {
             ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
-            System.out.println("✅ Arquivo carregado do S3 com sucesso!");
+            System.out.println("Arquivo carregado do S3 com sucesso!");
             return response;
         } catch (S3Exception e) {
-            System.err.println("❌ Erro ao baixar do S3: " + e.awsErrorDetails().errorMessage());
+            System.err.println("Erro ao baixar do S3: " + e.awsErrorDetails().errorMessage());
             throw new IOException("Falha ao obter InputStream do S3", e);
         }
     }
