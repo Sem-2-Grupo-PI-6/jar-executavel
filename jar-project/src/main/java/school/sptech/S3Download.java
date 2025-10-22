@@ -10,7 +10,6 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class S3Download {
 
@@ -26,7 +25,7 @@ public class S3Download {
     }
 
     public void baixarArquivoParaDisco(String key, String caminhoLocal) throws IOException {
-        System.out.println("⬇️ Baixando do S3: " + bucketName + "/" + key);
+        System.out.println(" " + bucketName + "/" + key);
         GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
