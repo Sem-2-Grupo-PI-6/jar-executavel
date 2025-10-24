@@ -48,15 +48,13 @@ public class LerPersistirDados {
                         !linha[0].isEmpty() && !linha[1].isEmpty()) {
                     try {
 
-                        Date dataApuracao = new SimpleDateFormat("yyyy-MM-dd").parse(linha[0]);
-
+                        String dataApuracao = linha[0];
                         String valor = linha[1].replace(",", ".");
+
                         Double taxaApuracao = Double.parseDouble(valor);
 
-                        System.out.println("como esta antes de insrir: " + dataApuracao + taxaApuracao);
 
-
-                        System.out.println("Como esta após tratamento: " + dataApuracao + taxaApuracao);
+                        System.out.println("Como esta após tratamento:  Data:" + dataApuracao +" Taxa:"+ taxaApuracao);
                         jdbcTemplate.update(
                                 "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
                                 taxaApuracao,
