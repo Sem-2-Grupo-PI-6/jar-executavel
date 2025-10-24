@@ -49,7 +49,9 @@ public class LerPersistirDados {
                     try {
 
                         Date dataApuracao = new SimpleDateFormat("yyyy-MM-dd").parse(linha[0]);
-                        Double taxaApuracao = Double.parseDouble(linha[1]);
+
+                        String valor = linha[1].replace(",", ".");
+                        Double taxaApuracao = Double.parseDouble(valor);
 
                         jdbcTemplate.update(
                                 "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
@@ -62,7 +64,7 @@ public class LerPersistirDados {
                                 timestamp, dataApuracao, taxaApuracao);
 
                     } catch (Exception e) {
-                        System.err.println("[" + timestamp + "] ⚠️ Linha inválida: " + Arrays.toString(linha));
+                        System.err.println("[" + timestamp + "]  Linha inválida: " + Arrays.toString(linha));
                     }
                 }
             }
