@@ -64,7 +64,7 @@ public class LerPersistirDados {
                                 timestamp, dataApuracao, taxaApuracao);
 
                     } catch (Exception e) {
-                        System.err.println("[" + timestamp + "]  Linha inválida: " + Arrays.toString(linha));
+                        System.err.println("Linha inválida: " + Arrays.toString(linha) + " -> " + e.getMessage());
                     }
                 }
             }
