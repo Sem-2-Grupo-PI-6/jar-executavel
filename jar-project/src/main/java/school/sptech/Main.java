@@ -1,12 +1,9 @@
 package school.sptech;
-
-import software.amazon.awssdk.regions.Region;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         List<String> arquivosXlsx = List.of(
                 "inflacao.xlsx",
@@ -16,11 +13,7 @@ public class Main {
         );
 
         LerPersistirDados inflacao = new LerPersistirDados();
-        inflacao.inserirDadosInflacao(arquivosXlsx.getFirst());
-
-
-
-
+        inflacao.inserirDadosInflacao("inflacao.csv");
 
     }
 }

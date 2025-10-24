@@ -1,11 +1,6 @@
 package school.sptech;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.opencsv.CSVReader;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -18,6 +13,9 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class LerPersistirDados {
@@ -28,7 +26,6 @@ public class LerPersistirDados {
     private final Region region = Region.US_EAST_1;
     private final S3Client s3Client;
 
-    // Construtor
     public LerPersistirDados() {
         this.s3Client = S3Client.builder()
                 .region(region)
@@ -37,43 +34,53 @@ public class LerPersistirDados {
     }
 
     public void inserirDadosInflacao(String key) {
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        System.out.println("[" + timestamp + "] ⏳ Iniciando leitura do arquivo CSV: " + key);
+
         try (InputStream inputStream = baixarArquivo(key);
-             Workbook workbook = new XSSFWorkbook(inputStream)) {
+             InputStreamReader isr = new InputStreamReader(inputStream);
+             CSVReader csvReader = new CSVReader(isr)) {
 
-            Sheet sheet = workbook.getSheetAt(0);
+            String[] linha;
+            int count = 0;
+            while ((linha = csvReader.readNext()) != null) {
+                if (linha.length >= 2 && linha[0] != null && linha[1] != null &&
+                        !linha[0].isEmpty() && !linha[1].isEmpty()) {
+                    try {
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                if (row == null) continue;
+                        Date dataApuracao = new SimpleDateFormat("yyyy-MM-dd").parse(linha[0]);
+                        Double taxaApuracao = Double.parseDouble(linha[1]);
 
-                Date dataApuracao = row.getCell(0).getDateCellValue();
-                Double taxaApuracao = row.getCell(1).getNumericCellValue();
+                        jdbcTemplate.update(
+                                "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
+                                taxaApuracao,
+                                dataApuracao
+                        );
 
-                // Inserir no banco via JDBC
-                jdbcTemplate.update(
-                        "INSERT INTO inflacao (taxaInflacao, dataApuracao) VALUES (?, ?)",
-                        taxaApuracao,
-                        dataApuracao
-                );
+                        count++;
+                        System.out.printf("[%s] 💾 Inserido: Data=%s | Taxa=%.2f%%%n",
+                                timestamp, dataApuracao, taxaApuracao);
+
+                    } catch (Exception e) {
+                        System.err.println("[" + timestamp + "] ⚠️ Linha inválida: " + Arrays.toString(linha));
+                    }
+                }
             }
 
-            System.out.println("✅ Inserção de dados da inflação concluída com sucesso!");
+            System.out.println("[" + timestamp + "]  Inserção de " + count + " registros concluída com sucesso!");
 
-        } catch (IOException e) {
-            throw new RuntimeException("Erro de I/O ao processar o arquivo do S3 (verifique POI e formato): " + e.getMessage(), e);
-        } catch (EncryptedDocumentException e) {
-            throw new RuntimeException("O arquivo Excel está criptografado e não pode ser lido.", e);
-        } catch (IllegalStateException e) {
-            throw new RuntimeException("Erro de tipo de dado incorreto na planilha: " + e.getMessage(), e);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro de acesso ao banco de dados durante a inserção: " + e.getMessage(), e);
+            throw new RuntimeException("[" + timestamp + "]  Erro no banco de dados: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("[" + timestamp + "]  Erro de I/O ao processar arquivo do S3: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado durante o processamento do Excel ou do banco: " + e.getMessage(), e);
+            throw new RuntimeException("[" + timestamp + "]  Erro inesperado: " + e.getMessage(), e);
         }
     }
 
     private InputStream baixarArquivo(String key) throws IOException {
-        System.out.println("🔹 Baixando do S3: " + bucketName + "/" + key);
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        System.out.println("[" + timestamp + "] 🔹 Baixando do S3: " + bucketName + "/" + key);
 
         GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -82,16 +89,15 @@ public class LerPersistirDados {
 
         try {
             ResponseInputStream<GetObjectResponse> response = s3Client.getObject(request);
-            System.out.println("Arquivo carregado do S3 com sucesso!");
+            System.out.println("[" + timestamp + "]  Arquivo CSV carregado do S3 com sucesso!");
             return response;
         } catch (S3Exception e) {
-            System.err.println("Erro ao baixar do S3: " + e.awsErrorDetails().errorMessage());
+            System.err.println("[" + timestamp + "]  Erro ao baixar do S3: " + e.awsErrorDetails().errorMessage());
             throw new IOException("Falha ao obter InputStream do S3", e);
         }
     }
 
     public void fecharS3() {
         s3Client.close();
-        System.out.println("🔒 Cliente S3 fechado.");
     }
 }
