@@ -80,6 +80,7 @@ public class LerPersistirDados {
         } catch (Exception e) {
             throw new RuntimeException("[" + timestamp + "]  Erro inesperado: " + e.getMessage(), e);
         }
+
     }
 
     private InputStream baixarArquivo(String key) throws IOException {
